@@ -7,6 +7,9 @@ https://user-images.githubusercontent.com/8509057/140267217-08b6b6f0-0ff0-4de4-8
 # JoyFlick
 ゲームパッドを用いる、フリック入力ベースの高速な日本語入力手法・JoyFlickをMinecraft内で使えるようにするMODです。
 
+## 操作方法
+- +ボタン: ソフトウェアキーボードの展開, 発言
+
 ## 追加されるソフトウェアキーボード
 いずれのキーボードも[Google CGI API for Japanese Input](https://www.google.co.jp/ime/cgiapi.html) によるIMEを搭載しており、
 かな漢字変換を使うことができます。

@@ -1,0 +1,39 @@
+modLoader = "kotlinforforge"
+loaderVersion = "[1,)"
+issueTrackerURL = "https://github.com/KaiseiYokoyama/JoyFlickMOD/issues"
+displayURL = "https://kaiseiyokoyama.github.io/"
+#logoFile = "controllable_logo.png"
+authors = "Kaisei Yokoyama"
+credits = "MrCrayfish"
+license = "All rights reserved"
+
+[[mods]]
+modId = "joyflick"
+version = "0.1.0"
+displayName = "JoyFlick"
+description = "JoyFlickを用いた日本語入力を提供します"
+
+[[dependencies.joyflick]]
+modId = "forge"
+mandatory = true
+versionRange = "[34.1.0,)"
+ordering = "NONE"
+side = "CLIENT"
+[[dependencies.joyflick]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.16.3,1.17)"
+ordering = "NONE"
+side = "CLIENT"
+[[dependencies.joyflick]]
+modId = "controllable"
+mandatory = true
+versionRange = "[0.13,0.14)"
+ordering = "NONE"
+side = "CLIENT"
+[[dependencies.joyflick]]
+modId = "kotlinforforge"
+mandatory = false
+versionRange = "[1.15.1,)"
+ordering = "NONE"
+side = "CLIENT"

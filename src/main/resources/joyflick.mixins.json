@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.kyokoyama.joyflick.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.8",
+  "refmap": "joyflick.refmap.json",
+  "client": [
+    "client.ControllableMixin",
+    "client.NewChatGuiMixin",
+    "client.ControllerInputMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

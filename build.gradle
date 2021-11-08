@@ -1,0 +1,216 @@
+buildscript {
+    ext.kotlin_version = '1.5.21'
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'kotlin'
+apply plugin: 'org.spongepowered.mixin'
+//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+
+version = "0.1.0-1.16.3"
+group = "com.kyokoyama" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "joyflick"
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+mixin {
+    add sourceSets.main, "joyflick.refmap.json"
+}
+
+minecraft {
+    mappings channel: 'snapshot', version: '20201028-1.16.3'
+    
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            arg "-mixin.config=joyflick.mixins.json"
+            mods {
+                joyflick {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            arg "-mixin.config=joyflick.mixins.json"
+            mods {
+                joyflick {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'joyflick', '--all', '--output', file('src/generated/resources/')
+            mods {
+                joyflick {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.k-4u.nl"
+    }
+    maven {
+        url = "https://www.cursemaven.com"
+    }
+    mavenCentral()
+    maven {
+        name = 'kotlinforforge'
+        url = 'https://thedarkcolour.github.io/KotlinForForge/'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        maven { url = "https://jitpack.io" }
+    }
+}
+
+configurations {
+    shade
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.16.3-34.1.42'
+//    implementation fg.deobf("mezz.jei:jei-1.16.3:7.6.0.51")
+    runtimeOnly fg.deobf("curse.maven:controllable-317269:3335987")
+    compileOnly fg.deobf("curse.maven:controllable-317269:3335987")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'thedarkcolour:kotlinforforge:1.15.1'
+
+    // reflection
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    shade "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    implementation "com.github.KaiseiYokoyama:JoyFlickMODRecord:v1.11-pub"
+    shade "com.github.KaiseiYokoyama:JoyFlickMODRecord:v1.11-pub"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.2.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+    implementation "org.jsoup:jsoup:1.14.2"
+    implementation 'org.jetbrains.kotlinx:kotlinx-datetime:0.3.0'
+
+    shade "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1"
+    shade "org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.2.1"
+    shade "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+    shade "org.jsoup:jsoup:1.14.2"
+    shade 'org.jetbrains.kotlinx:kotlinx-datetime:0.3.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : "JoyFlick",
+                "Specification-Vendor"    : "Kaisei Yokoyama",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "Kaisei Yokoyama",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "Signing-Fingerprint"     : project.hasProperty('fingerprint') ? project.property('fingerprint') : 'unsigned',
+                "MixinConfigs"            : "joyflick.mixins.json"
+        ])
+    }
+//    configurations.shade.each { dep ->
+//        from(project.zipTree(dep)) {
+//            exclude 'META-INF', 'META-INF/**'
+//        }
+//    }
+//    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//    enabled = false
+}
+
+shadowJar {
+    archiveClassifier.set('')
+
+    configurations = [project.configurations.shade]
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// https://qiita.com/MirrgieRiana/items/a006a0fbe21e30a2f7a2
+reobf {
+    shadowJar { }
+}
+tasks.shadowJar.finalizedBy('reobfShadowJar')
+
+artifacts {
+    archives shadowJar
+}
+
+test {
+    // JUnit platform を使う設定
+    useJUnitPlatform()
+
+    testLogging {
+        // テスト時の標準出力と標準エラー出力を表示する
+        showStandardStreams true
+        // イベントを出力する (TestLogEvent)
+        events 'started', 'skipped', 'passed', 'failed'
+        // 例外発生時の出力設定 (TestExceptionFormat)
+        exceptionFormat 'full'
+    }
+}
+
+//Properties keyStoreProperties = new Properties()
+//File file = new File("C:\\dev\\keystore.properties")
+//if (file.exists()) {
+//    InputStream ins = new FileInputStream(file)
+//    keyStoreProperties.load(ins)
+//    ins.close()
+//}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
